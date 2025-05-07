@@ -32,14 +32,24 @@ class XAIPromptSubmitter:
         if not self.api_key:
             logger.error("XAI_API_KEY not found in environment variables or .env file.")
         
-        # Set up httpx/OpenAI client if available
-        if OpenAI and httpx and self.api_key:
-            http_client = httpx.Client(proxies=None, transport=httpx.HTTPTransport(retries=3))
-            self.client = OpenAI(
-                api_key=self.api_key,
-                base_url="https://api.x.ai/v1",
-                http_client=http_client
-            )
+        # Set up OpenAI client if available
+        if OpenAI and self.api_key:
+            try:
+                # Try using httpx with transport parameter only (no proxies)
+                transport = httpx.HTTPTransport(retries=3)
+                http_client = httpx.Client(transport=transport)
+                self.client = OpenAI(
+                    api_key=self.api_key,
+                    base_url="https://api.x.ai/v1",
+                    http_client=http_client
+                )
+            except TypeError:
+                # Fall back to default client without custom transport
+                logger.warning("Could not configure custom httpx transport, using default client")
+                self.client = OpenAI(
+                    api_key=self.api_key,
+                    base_url="https://api.x.ai/v1"
+                )
         else:
             self.client = None
 
