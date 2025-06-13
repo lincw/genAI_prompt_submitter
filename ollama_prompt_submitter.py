@@ -1,6 +1,6 @@
 # Script: ollama_prompt_submitter.py
 # date_created: 2025-06-02T13:28:49+02:00
-# date_modified: 2025-06-02T13:28:53+02:00
+# date_modified: 2025-06-13T22:04:58+02:00
 
 """
 Ollama Prompt Submitter
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 PROMPTS_DIR = "prompts"
 REPORTS_DIR = "reports"
-DEFAULT_MODEL = "deepseek-r1:32b"  # Default model if none specified
+DEFAULT_MODEL = "gemma3:12b-it-q8_0"
 
 class OllamaPromptSubmitter:
     def __init__(self, model: str = None):
@@ -67,7 +67,7 @@ class OllamaPromptSubmitter:
             response = ollama.generate(
                 model=self.model,
                 prompt=prompt,
-                options={"temperature": 0.7, "num_ctx": 4096}
+                options={"temperature": 0.5, "num_ctx": 4096}
             )
             logger.info("Ollama generation complete. Response received.")
             return response.get("response", "No response generated.")
